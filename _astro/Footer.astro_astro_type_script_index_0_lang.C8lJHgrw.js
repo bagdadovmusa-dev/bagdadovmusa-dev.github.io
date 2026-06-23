@@ -1,0 +1,1 @@
+import{s as n}from"./supabase.By9mfVbi.js";async function s(){const e=document.getElementById("footerWorkingHours");if(!e)return;const{data:t}=await n.from("site_settings").select("value").eq("key","working_hours").single();t?.value&&(e.textContent=`Часы работы: ${t.value}`,e.classList.remove("hidden"))}s();
