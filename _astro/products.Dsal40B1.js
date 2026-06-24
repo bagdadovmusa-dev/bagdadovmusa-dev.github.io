@@ -1,1 +1,0 @@
-import{s as o}from"./supabase.By9mfVbi.js";async function a(){const{data:e,error:r}=await o.from("products").select("*").order("created_at",{ascending:!0});return r?(console.error("Failed to load products from Supabase",r),[]):e??[]}export{a as g};
