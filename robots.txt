@@ -5,4 +5,6 @@
 User-agent: *
 Allow: /
 
+Sitemap: https://djamalperfumer.ru/sitemap.xml
+
 Host: djamalperfumer.ru
