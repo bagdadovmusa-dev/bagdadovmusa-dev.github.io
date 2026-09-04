@@ -1,0 +1,43 @@
+<!doctype html><html lang="ru"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Проверка видео</title>
+<style>
+ body{background:#0d0b09;color:#f0e6d2;font:16px/1.6 system-ui,sans-serif;margin:0;padding:16px}
+ h1{font-size:19px;color:#c9a84c;margin:0 0 12px}
+ .row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #2a241c}
+ .k{color:#9c8f7a} .v{text-align:right;font-weight:700;word-break:break-all}
+ .ok{color:#7ddb92} .bad{color:#ff8080}
+ video{width:100%;margin-top:14px;border:1px solid #2a241c;border-radius:8px}
+ p{color:#9c8f7a;font-size:14px}
+</style>
+<h1>Проверка фильма на телефоне</h1>
+<div id="out"></div>
+<video id="v" src="/hero-intro-mobile.mp4" muted playsinline preload="auto"></video>
+<p>Сфотографируй этот экран и покажи Хамзе.</p>
+<script>
+var v=document.getElementById('v'),out=document.getElementById('out'),t0=Date.now(),playedAt=0,err='';
+var states=['0 пусто','1 метаданные','2 текущий кадр','3 можно играть','4 хватит до конца'];
+v.addEventListener('playing',function(){ if(!playedAt) playedAt=Date.now()-t0; });
+v.addEventListener('error',function(){ err = v.error ? ('код '+v.error.code) : 'да'; });
+var p=v.play();
+var autoplay='ждём…';
+if(p&&p.then) p.then(function(){autoplay='РАЗРЕШЁН';}).catch(function(e){autoplay='ЗАПРЕЩЁН ('+e.name+')';});
+function row(k,val,good){return '<div class="row"><span class="k">'+k+'</span><span class="v '+(good===true?'ok':good===false?'bad':'')+'">'+val+'</span></div>';}
+function tick(){
+ var buf=0; try{ if(v.buffered.length) buf=v.buffered.end(0);}catch(e){}
+ var sec=(Date.now()-t0)/1000;
+ var kb = v.webkitVideoDecodedByteCount||0;
+ out.innerHTML =
+  row('Автозапуск', autoplay, autoplay.indexOf('РАЗР')===0)+
+  row('Играет сейчас', v.paused?'НЕТ':'ДА', !v.paused)+
+  row('Секунда фильма', v.currentTime.toFixed(1))+
+  row('Загружено секунд', buf.toFixed(1))+
+  row('Готовность', states[v.readyState]||v.readyState, v.readyState>=2)+
+  row('Ошибка файла', err||'нет', !err)+
+  row('Размер картинки', v.videoWidth?(v.videoWidth+'×'+v.videoHeight):'не пришла', !!v.videoWidth)+
+  row('Заиграл через', playedAt?(playedAt/1000).toFixed(1)+' сек':'ещё нет', !!playedAt)+
+  row('Прошло времени', sec.toFixed(0)+' сек')+
+  row('Скорость', buf&&sec?((v.videoWidth?4957:0)*buf/21.7/sec).toFixed(0)+' КБ/с':'—');
+}
+setInterval(tick,300);tick();
+</script>
